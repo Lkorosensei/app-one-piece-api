@@ -1,0 +1,10 @@
+main {
+    background-image: url(../image/one-piece7.jpg);
+}
+
+.container {
+    width: 50%;
+    height: 500px;
+    background-color: white;
+    opacity: 80%;
+}
