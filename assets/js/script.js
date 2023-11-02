@@ -1,7 +1,8 @@
 console.log("Kaizoku ou ni naru otoko da");
 let fruitTrouver = {};
+let typeTrouver = {};
 
-// ____________________________________________________________RÉCUPÉRATION DE L'API DE TOUT LES FRUITS________________________________________________________
+// ____________________________________________________________RÉCUPÉRATION DE L'API DE TOUT LES FRUITS________________________________________________________________________________________________
 let dataFetch;
 const urlApiOnePiece = "https://api.api-onepiece.com/fruits";
 await getDataFetch();
@@ -10,7 +11,7 @@ async function getDataFetch() {
     dataFetch = await res.json();
 }
 
-// ____________________________________________________________CONSOLE LOG TEST________________________________________________________________________________
+// ____________________________________________________________CONSOLE LOG TEST________________________________________________________________________________________________________________________
 console.log("Donnée récupéré via Fetch :", dataFetch);
 console.log("Nom français récupéré API :", dataFetch[0].french_name);
 console.log("Nom japonais récupéré API :", dataFetch[0].roman_name);
@@ -21,24 +22,38 @@ console.log("Image récupéré API :", dataFetch[0].filename);
 // console.log("test", dataFetchImage.image);
 
 
-// __________________________________________________________CRÉATION DE L'AFFICHAGE PAR DÉFAULT_______________________________________________________________
+// ____________________________________________________________CRÉATION DE L'AFFICHAGE PAR DÉFAULT_____________________________________________________________________________________________________
 let NomSelectParDefault = document.createElement("select");
 NomSelectParDefault.classList.add("nom-select-par-default");
 document.querySelector(".choice-list").appendChild(NomSelectParDefault);
 
+
+
+
+// ____________________________________________________________EVENEMENT CHANGEMENT DU SELECT QUAND ON CHOISIT UN FRUIT DANS LE SELECT_________________________________________________________________
+chercherFruits();
+
+function chercherFruits(params) {
+       if (document.getElementById("radio-nom") =="par-nom") {
+            
+       } else {
+        
+       }
+
+}
+
+ NomSelectParDefault.addEventListener("change", (selectChange) => {
+        fruitTrouver = dataFetch.find((fruitChoisi) => fruitChoisi.french_name == selectChange.target.value)
+        console.log("Ceci est mon find/ mon objet : ", fruitTrouver);
+        infosListe(fruitTrouver);
+    })
+
+
+// ____________________________________________________________FONCTION POUR REMPLIR LES OPTIONS DU SELECT (METTRE TOUT LES FRUITS DANS LA LISTE)______________________________________________________
 garnirListe();
 
-
-// ____________________________________________________________EVENEMENT CHANGEMENT DU SELECT QUAND ON CHOISIT UN FRUIT DANS LE SELECT____________________________________
-NomSelectParDefault.addEventListener("change", (selectChange) => {
-    fruitTrouver = dataFetch.find((fruitChoisi) => fruitChoisi.french_name == selectChange.target.value)
-    console.log("Ceci est mon find/ mon objet : ", fruitTrouver);
-    infosListe(fruitTrouver);
-})
-
-
-// _____________________________________________________________FONCTION POUR REMPLIR LES OPTIONS DU SELECT (METTRE TOUT LES FRUITS DANS LA LISTE)_______________________________________
-function garnirListe(params) {
+function garnirListe() {
+    NomSelectParDefault.innerHTML = "";
     let nomSelectTitre = document.createElement("option");
     nomSelectTitre.innerText = "--- Choisissez votre fruits ---";
     NomSelectParDefault.appendChild(nomSelectTitre)
@@ -50,21 +65,56 @@ function garnirListe(params) {
     });
 }
 
-// _____________________________________________________________FONCTION POUR CHANGER DE RADIO (radio type)_______________________________________
-console.log("TEST OULOUOLK", document.querySelector("input"));
+// ____________________________________________________________FONCTION POUR CHANGER DE RADIO (radio type)_____________________________________________________________________________________________
+ChangementRadio();
+
+function ChangementRadio() {
+        document.querySelectorAll("input[type='radio']").forEach(radio => {
+        radio.addEventListener("change", (eventChange) => {
+            if (eventChange.target.value === "par-nom") {
+                garnirListe()
+            } else if (eventChange.target.value === "par-type") {
+                remplacerOptionsChangementRadio()
+            }
+        })
+    })
+}
+
+
+// function ChangerdeRadioType(params) {
+//     document.getElementById("radio-type").addEventListener("change", () => {
+        
+//     }
+//     )
+// }
+
+// function RechangerRadioNom(params) {
+//     document.getElementById("radio-nom").addEventListener("change", () => {
+//         garnirListe();
+//     })
+// }
+// ChangerdeRadioType();
+// RechangerRadioNom();
 
 
 
-// _____________________________________________________________FONCTION POUR REMPLIR LES OPTIONS DU SELECT POUR LES TYPES (METTRE TOUT LES TYPES DANS LA LISTE)_______________________________________
-
-
-
-
-
-
-
-
-//_______________________________________________________________________FONCTION POUR STOCKER LES INFOS DU FRUIT_________________________________________________________
+// ____________________________________________________________FONCTION POUR REMPLIR LES OPTIONS DU SELECT POUR LES TYPES (METTRE TOUT LES TYPES DANS LA LISTE)________________________________________
+function remplacerOptionsChangementRadio() {  
+    NomSelectParDefault.innerHTML = "";
+    let titreOptionRadioType = document.createElement("option");
+    titreOptionRadioType.innerText = "--- Choisissez votre type ---";
+    let optionTypeParamecia = document.createElement("option");
+    let optionTypeZoan = document.createElement("option");
+    let optionTypeLogia = document.createElement("option");
+    optionTypeParamecia.innerText = "Paramecia";
+    optionTypeZoan.innerText = "Zoan";
+    optionTypeLogia.innerText = "Logia";
+    NomSelectParDefault.appendChild(titreOptionRadioType);
+    NomSelectParDefault.appendChild(optionTypeParamecia);
+    NomSelectParDefault.appendChild(optionTypeZoan);
+    NomSelectParDefault.appendChild(optionTypeLogia);
+}
+//_____________________________________________________________FONCTION POUR STOCKER LES INFOS DU FRUIT________________________________________________________________________________________________
 async function infosListe(ObjetFruits) {
     // ---------------------------------------------------------------INTEGRATION IMAGE ---------------------------------------------------
     const urlImageFruits = await getImage(ObjetFruits);
@@ -90,7 +140,8 @@ async function infosListe(ObjetFruits) {
     
 }
 
-//  _______________________________________________________________________FONCTION POUR RECUPERER IMAGE ET URL________________________________________________
+
+//  ___________________________________________________________FONCTION POUR RECUPERER IMAGE ET URL____________________________________________________________________________________________________
 async function getImage(fruit) {
 // Récupération de l'API des images des fruits
     const urlApiOnePieceImage = `https://api.api-onepiece.com/fruits/picture/${fruit.filename}`;
@@ -105,34 +156,34 @@ async function getDataFetchImage(url) {
     return dataFetchImage
 }
 
-//  _______________________________________________________________________FONCTION POUR RECUPERER TYPE ET URL_________________________________________________
+// //  ___________________________________________________________FONCTION POUR RECUPERER TYPE ET URL_____________________________________________________________________________________________________
 
-// Fonction pour récuperer API Paramecia
-let dataFetchTypeParamecia = {};
-const urlApiOnePieceTypeParamecia = "https://api.api-onepiece.com/fruits/search/type/Paramecia";
-await getDataFetchTypeParamecia();
-async function getDataFetchTypeParamecia() {
-    const res = await fetch(urlApiOnePieceTypeParamecia);
-    dataFetchTypeParamecia = await res.json();
-}
-console.log("Api paramecia ", dataFetchTypeParamecia);
+// // Fonction pour récuperer API Paramecia
+// let dataFetchTypeParamecia = {};
+// const urlApiOnePieceTypeParamecia = "https://api.api-onepiece.com/fruits/search/type/Paramecia";
+// await getDataFetchTypeParamecia();
+// async function getDataFetchTypeParamecia() {
+//     const res = await fetch(urlApiOnePieceTypeParamecia);
+//     dataFetchTypeParamecia = await res.json();
+// }
+// console.log("Api paramecia ", dataFetchTypeParamecia);
 
-// Fonction pour récuperer API Zoan
-let dataFetchTypeZoan = {};
-const urlApiOnePieceTypeZoan = "https://api.api-onepiece.com/fruits/search/type/Zoan";
-await getDataFetchTypeZoan();
-async function getDataFetchTypeZoan() {
-    const res = await fetch(urlApiOnePieceTypeZoan);
-    dataFetchTypeZoan = await res.json();
-}
-console.log("Api Zoan ", dataFetchTypeZoan);
+// // Fonction pour récuperer API Zoan
+// let dataFetchTypeZoan = {};
+// const urlApiOnePieceTypeZoan = "https://api.api-onepiece.com/fruits/search/type/Zoan";
+// await getDataFetchTypeZoan();
+// async function getDataFetchTypeZoan() {
+//     const res = await fetch(urlApiOnePieceTypeZoan);
+//     dataFetchTypeZoan = await res.json();
+// }
+// console.log("Api Zoan ", dataFetchTypeZoan);
 
-// Fonction pour récuperer API Logia
-let dataFetchTypeLogia = {};
-const urlApiOnePieceTypeLogia = "https://api.api-onepiece.com/fruits/search/type/Logia";
-await getDataFetchTypeLogia();
-async function getDataFetchTypeLogia() {
-    const res = await fetch(urlApiOnePieceTypeLogia);
-    dataFetchTypeLogia = await res.json();
-}
-console.log("Api Logia ", dataFetchTypeLogia);
+// // Fonction pour récuperer API Logia
+// let dataFetchTypeLogia = {};
+// const urlApiOnePieceTypeLogia = "https://api.api-onepiece.com/fruits/search/type/Logia";
+// await getDataFetchTypeLogia();
+// async function getDataFetchTypeLogia() {
+//     const res = await fetch(urlApiOnePieceTypeLogia);
+//     dataFetchTypeLogia = await res.json();
+// }
+// console.log("Api Logia ", dataFetchTypeLogia);
