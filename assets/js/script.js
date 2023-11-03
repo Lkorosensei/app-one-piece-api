@@ -31,22 +31,22 @@ document.querySelector(".choice-list").appendChild(NomSelectParDefault);
 
 
 // ____________________________________________________________EVENEMENT CHANGEMENT DU SELECT QUAND ON CHOISIT UN FRUIT DANS LE SELECT_________________________________________________________________
-chercherFruits();
+NomSelectParDefault.addEventListener("change", (selectChange) => {
+    const radioParNom = document.querySelector("input[type='radio'][value='par-nom']:checked");
 
-function chercherFruits(params) {
-       if (document.getElementById("radio-nom") =="par-nom") {
-            
-       } else {
-        
-       }
-
-}
-
- NomSelectParDefault.addEventListener("change", (selectChange) => {
+    if (radioParNom) {
+        console.log("salam", selectChange.target.value);
         fruitTrouver = dataFetch.find((fruitChoisi) => fruitChoisi.french_name == selectChange.target.value)
-        console.log("Ceci est mon find/ mon objet : ", fruitTrouver);
+        console.log("Fruit trouver if : ", fruitTrouver);
         infosListe(fruitTrouver);
-    })
+        document.querySelector(".info-fruits img").style.display = "block";
+    } else {
+        let fruitTrouverTypes = dataFetch.filter((fruit) => fruit.type === selectChange.target.value)
+        console.log("Fruit trouver else : ", fruitTrouverTypes);
+        infosListeType(fruitTrouverTypes);
+        document.querySelector(".info-fruits img").style.display = "none";
+    }
+})
 
 
 // ____________________________________________________________FONCTION POUR REMPLIR LES OPTIONS DU SELECT (METTRE TOUT LES FRUITS DANS LA LISTE)______________________________________________________
@@ -73,8 +73,11 @@ function ChangementRadio() {
         radio.addEventListener("change", (eventChange) => {
             if (eventChange.target.value === "par-nom") {
                 garnirListe()
+                document.querySelector(".info-fruits ul").innerHTML = "";
             } else if (eventChange.target.value === "par-type") {
                 remplacerOptionsChangementRadio()
+                document.querySelector(".info-fruits img").style.display = "none";
+                document.querySelector(".info-fruits ul").innerHTML = "";
             }
         })
     })
@@ -97,10 +100,25 @@ function ChangementRadio() {
 // RechangerRadioNom();
 
 
+// ____________________________________________________________FONCTION POUR CHERCHER ET AFFICHER TYPE_________________________________________________________________________________________________
+async function infosListeType(ObjetType) {
+    document.querySelector(".info-fruits ul").innerHTML = "";
+    ObjetType.forEach(ObjetType => {
+        let nomFrType = document.createElement("li")
+        nomFrType.textContent = "Nom Français : " + ObjetType.french_name;
+        console.log("Objet context cpntent", nomFrType.innerText);
+        document.querySelector(".info-fruits ul").appendChild(nomFrType)
+    })
+}
+
+
+
+
 
 // ____________________________________________________________FONCTION POUR REMPLIR LES OPTIONS DU SELECT POUR LES TYPES (METTRE TOUT LES TYPES DANS LA LISTE)________________________________________
 function remplacerOptionsChangementRadio() {  
     NomSelectParDefault.innerHTML = "";
+    // document.querySelector(".info-fruits img").style.display = "none";
     let titreOptionRadioType = document.createElement("option");
     titreOptionRadioType.innerText = "--- Choisissez votre type ---";
     let optionTypeParamecia = document.createElement("option");
@@ -122,28 +140,31 @@ async function infosListe(ObjetFruits) {
     let imageFruits = document.querySelector(".info-fruits img");  
     console.log("c'est mon url sch",urlImageFruits);
     imageFruits.src = urlImageFruits.image;
+    document.querySelector(".info-fruits ul").innerHTML = "";
     // --------------------------------------------------------------- INTEGRATION NOM ----------------------------------------------------
-    let nomEnJaponaisFruits = document.querySelector("li:first-child");
+    let nomEnJaponaisFruits = document.createElement("li")
     // nomEnJaponaisFruits.textContent = "Nom Japonais : " + dataFetch[NomSelectParDefault.selectedIndex-1].roman_name;
     nomEnJaponaisFruits.textContent = "Nom Japonais : " + ObjetFruits.roman_name;
     console.log("Cible nom en jap :", nomEnJaponaisFruits.textContent);
+    document.querySelector(".info-fruits ul").appendChild(nomEnJaponaisFruits)
     // --------------------------------------------------------------- INTEGRATION TYPE ---------------------------------------------------
-    let typeJaponais = document.querySelector("li:nth-child(2)");
+    let typeJaponais = document.createElement("li")
     // typeJaponais.textContent = "Type : " + dataFetch[NomSelectParDefault.selectedIndex-1].type;
     typeJaponais.textContent = "Type : " + ObjetFruits.type;
     console.log("Cible mon type :", typeJaponais.textContent);
+    document.querySelector(".info-fruits ul").appendChild(typeJaponais)
     // --------------------------------------------------------------- INTEGRATION DESCRIPTION --------------------------------------------
-    let descriptionFruits = document.querySelector("li:last-child");
+    let descriptionFruits = document.createElement("li")
     // descriptionFruits.textContent = "Description : " + dataFetch[NomSelectParDefault.selectedIndex-1].description;//
     descriptionFruits.textContent = "Description : " + ObjetFruits.description;
     console.log("Cible ma description : " + descriptionFruits.textContent);
+    document.querySelector(".info-fruits ul").appendChild(descriptionFruits)
     
 }
 
 
 //  ___________________________________________________________FONCTION POUR RECUPERER IMAGE ET URL____________________________________________________________________________________________________
 async function getImage(fruit) {
-// Récupération de l'API des images des fruits
     const urlApiOnePieceImage = `https://api.api-onepiece.com/fruits/picture/${fruit.filename}`;
     console.log(urlApiOnePieceImage);
     const urlImageFruits = await getDataFetchImage(urlApiOnePieceImage);
